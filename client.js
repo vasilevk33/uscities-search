@@ -27,12 +27,30 @@ searchInput.addEventListener('keypress', function(e) {
     }
 });
 
+/*
+// Old Version 2 Code
 // Instant Ajax Request: fires on every keyup, not just Enter
 searchInput.addEventListener('keyup', function(event) {
-    search()
+    search();
     if(event.key === 'Enter') {
         searchInput.value = ''; // clear the field after an explicit search
     }
+});
+*/
+
+// Instant Ajax Request: at least 2 characters before suggesting and debounce ~300ms after the last keystroke
+var debounceTimer = null;
+searchInput.addEventListener('keyup', function(event) {
+    if(event.key === 'Enter') {
+        clearTimeout(debounceTimer);
+        search();
+        searchInput.value = ''; // clear the field after an explicit search
+        return;
+    }
+    clearTimeout(debounceTimer);
+    var query = searchInput.value.trim();
+    if(query.length < 2) return; // AC5: need at least 2 characters before suggesting
+    debounceTimer = setTimeout(search, 300); // AC7: debounce ~300ms after the last keystroke
 });
 
 const BASE_URL = "https://vasilekm-uscities-microservices-g5agatf7azf6a4a7.eastus-01.azurewebsites.net/";
