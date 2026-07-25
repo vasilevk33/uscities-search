@@ -27,6 +27,14 @@ searchInput.addEventListener('keypress', function(e) {
     }
 });
 
+// Instant Ajax Request: fires on every keyup, not just Enter
+searchInput.addEventListener('keyup', function(event) {
+    search()
+    if(event.key === 'Enter') {
+        searchInput.value = ''; // clear the field after an explicit search
+    }
+});
+
 const BASE_URL = "https://vasilekm-uscities-microservices-g5agatf7azf6a4a7.eastus-01.azurewebsites.net/";
 
 async function search() {
@@ -58,5 +66,19 @@ function displaySearch(data) {
     }
     // AC1/AC2: matches found: show raw JSON text
     // AC3: no matches - explicit message instead of empty display
-    responsesElm.textContent = data.length === 0 ? 'No cities found' : JSON.stringify(data, null, 2);
+    responsesElm.innerHTML = jsonToHTMLTable(data); // This Shows HTML Table Now
+}
+
+// AC9/AC10: sanitize very field before it is rendered as HTML
+function dataSanitize(v) {
+    return DOMPurify.sanitize(typeof v === 'string' ? v : '');
+}
+
+function jsonToHTMLTable(data) {
+    if (!Array.isArray(data) || data.length === 0) return 'No cities found'; //AC10/AC11
+    var rows = data.map(function (c) {
+        return "<tr><td>" + dataSanitize(c.city) + "</td><td>" + dataSanitize(c.state_name) + 
+               "</td><td>" + dataSanitize(c.timezone) + "</td><td>" + dataSanitize(c.zips) + "</td></tr>";
+    }).join('');
+    return "<table><tr><th>City</th><th>State</th><th>Timezone</th><th>Zip Codes</th></tr>" + rows + "</table>";
 }
