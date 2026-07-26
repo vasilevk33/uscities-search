@@ -11,3 +11,26 @@
     cursor: pointer;
 }
 .round {border-radius: 8px;}
+
+/* uscities table output */
+
+.uscities-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-family: monospace
+}
+.uscities-table th, 
+.uscities-table td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+.uscities-table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    color: #000000;
+}
+.uscities-table tbody tr:hover {
+    background-color: #fcfcfc; 
+}

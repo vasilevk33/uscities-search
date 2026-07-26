@@ -49,29 +49,29 @@ searchInput.addEventListener('keyup', function(event) {
     }
     clearTimeout(debounceTimer);
     var query = searchInput.value.trim();
-    if(query.length < 2) return; // AC5: need at least 2 characters before suggesting
-    debounceTimer = setTimeout(search, 300); // AC7: debounce ~300ms after the last keystroke
+    if(query.length < 2) return; // AC-01.5: need at least 2 characters before suggesting
+    debounceTimer = setTimeout(search, 300); // AC-01.7: debounce ~300ms after the last keystroke
 });
 
 const BASE_URL = "https://vasilekm-uscities-microservices-g5agatf7azf6a4a7.eastus-01.azurewebsites.net/";
 
 async function search() {
     const query = searchInput.value.trim();
-    if (!query || query.length === 0) return; // AC9: empty queries never reach fetch() method
+    if (!query || query.length === 0) return; // AC-01.9: empty queries never reach fetch() method
     console.log(`Debug>query: ${query}`);
     try {
         const response = await fetch(`${BASE_URL}/uscities-search/${encodeURIComponent(query)}`);
         if (!response.ok) {
-            throw new Error('Unexpected status ${response.status}'); // AC4/AC11: fail safely
+            throw new Error('Unexpected status ${response.status}'); // AC-01.4/AC-01.11: fail safely
         }
         const data = await response.json();
         if (!Array.isArray(data)) {
-            throw new Error('Unexpected response format') // AC10: validate response shape before displayinh
+            throw new Error('Unexpected response format') // AC-01.10: validate response shape before displayinh
         }
         displaySearch(data);
     } catch (error) {
         console.log(`Debug>search error: ${error.message}`);
-        responses.textContent = 'Error: could not load results'; // AC$/AC11
+        responses.textContent = 'Error: could not load results'; // AC-01.4/AC-01.11
     }
 }
 
@@ -82,8 +82,8 @@ function displaySearch(data) {
         console.log("Error in getting 'responses' field");
         return;
     }
-    // AC1/AC2: matches found: show raw JSON text
-    // AC3: no matches - explicit message instead of empty display
+    // AC-01.1/AC-01.2: matches found: show raw JSON text
+    // AC-01.3: no matches - explicit message instead of empty display
     responsesElm.innerHTML = jsonToHTMLTable(data); // This Shows HTML Table Now
 }
 
@@ -93,10 +93,10 @@ function dataSanitize(v) {
 }
 
 function jsonToHTMLTable(data) {
-    if (!Array.isArray(data) || data.length === 0) return 'No cities found'; //AC10/AC11
+    if (!Array.isArray(data) || data.length === 0) return 'No cities found'; //AC-01.10/AC-01.11
     var rows = data.map(function (c) {
         return "<tr><td>" + dataSanitize(c.city) + "</td><td>" + dataSanitize(c.state_name) + 
                "</td><td>" + dataSanitize(c.timezone) + "</td><td>" + dataSanitize(c.zips) + "</td></tr>";
     }).join('');
-    return "<table><tr><th>City</th><th>State</th><th>Timezone</th><th>Zip Codes</th></tr>" + rows + "</table>";
+    return `<table class="uscities-table"><thead><tr><th>City</th><th>State</th><th>Timezone</th><th>Zip Codes</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
